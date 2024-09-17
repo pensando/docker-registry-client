@@ -102,7 +102,11 @@ func newFromTransport(registryURL, username, password string, transport http.Rou
 }
 
 func (r *Registry) url(pathTemplate string, args ...interface{}) string {
-	pathSuffix := fmt.Sprintf(pathTemplate, args...)
+	pathSuffix := pathTemplate
+	if len(args) != 0 {
+		pathSuffix = fmt.Sprintf(pathTemplate, args...)
+
+	}
 	url := fmt.Sprintf("%s%s", r.URL, pathSuffix)
 	return url
 }

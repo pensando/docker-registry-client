@@ -5,11 +5,12 @@ type repositoriesResponse struct {
 }
 
 func (registry *Registry) Repositories() ([]string, error) {
-	url := registry.url("/v2/_catalog")
+	url := "/v2/_catalog"
 	repos := make([]string, 0, 10)
 	var err error //We create this here, otherwise url will be rescoped with :=
 	var response repositoriesResponse
 	for {
+		url = registry.url(url)
 		registry.Logf("registry.repositories url=%s", url)
 		url, err = registry.getPaginatedJSON(url, &response)
 		switch err {
@@ -18,6 +19,9 @@ func (registry *Registry) Repositories() ([]string, error) {
 			return repos, nil
 		case nil:
 			repos = append(repos, response.Repositories...)
+			if url == "" {
+				return repos, nil
+			}
 			continue
 		default:
 			return nil, err
